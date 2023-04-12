@@ -1,0 +1,357 @@
+-- This is the Raycasting script reference
+
+local v1 = {}
+v1.__index = v1
+local v8 = require((game:GetService("ReplicatedStorage")):WaitForChild("HitboxHandler"))
+v1.new = function(p1, p2, p3, p4, p5)
+    local v11 = {}
+    local v12 = p1
+    if v12 then
+        v12 = RaycastParams.new
+        local v13 = v12()
+    end
+    v11.Parameters = v13
+    v13 = p2 or 0
+    v11.Penetration = v13
+    v13 = p3 or true
+    v11.OnlyCanCollide = v13
+    v13 = p4 or false
+    v11.AllowInvisible = v13
+    v13 = p5 or 1
+    v11.MaxPenetrations = v13
+    v13 = setmetatable
+    return v13(v11, v1)
+end
+v1.Raycast = function(p6, p7, p8)
+    local v18 = false
+    local v19 = 0
+    while true do
+        if v18 then
+            break
+        end
+        v19 = v19 + 1
+        local v27, v28, v29 = v8:RaycastForHitbox(p7, p8, p6.Parameters)
+        local v30 = v29
+        if not v30 then
+            v30 = p8.Unit * v29.Position - p7.Magnitude
+        end
+        if v29 then
+            return nil, nil, nil
+        end
+        v31 = p6.OnlyCanCollide
+        v31 = v28.CanCollide
+        v31 = p6.AllowInvisible
+        v31 = v28.Transparency
+        if v27 then
+            v31 = v29.Position
+            v33 = v29.Normal
+            v34 = v33 * 0.001
+            p7 = v31 - v34
+            p8 = p8 - v30
+        else
+            local v35 = v27
+            local v36 = v28
+            local v37 = v29
+            v18 = true
+            v35 = v27
+            v36 = v28
+            v37 = v29
+            v18 = true
+            return v35, v36, v37
+        end
+        v31 = 100
+        if v31 < v19 then
+            break
+        end
+    end
+    return v38, v39, v40
+    if v31 then
+    end
+    if not v31 then
+    end
+    if not v31 then
+    end
+end
+return v1
+
+-- That was the raycasting data, now onto the hitboxhandler module script.
+
+local v1 = {}
+local v4 = game:GetService("RunService")
+local v8 = require(script.Hitbox)
+local v9
+v1.Init = function(p1)
+    local v12 = v4:IsClient()
+    if not v12 then
+        v12 = workspace
+        v9 = v12:WaitForChild("Hitboxes")
+    else
+        v14 = Instance.new
+        v9 = v14("Folder")
+        v9.Name = "Hitboxes"
+        v9.Parent = workspace
+    end
+    v17 = v8
+    v16 = v17.initClass
+    v17 = v9
+    v16(v17)
+end
+v1.CreateHitbox = function(p2, p3)
+    return v8.new(p3)
+end
+v1.RaycastForHitbox = function(p4, ...)
+    local v26 = {}
+    v26[1] = ...
+    v27 = v26[3].FilterDescendantsInstances
+    v28 = nil
+    local v30
+    for v29, v33 in v27, v28, v30 do
+        local v34 = v9:FindFirstChild(v33.Name)
+        if not v34 then
+            v34 = v26[3].FilterDescendantsInstances
+            table.insert(v34, v9:FindFirstChild(v33.Name))
+            v26[3].FilterDescendantsInstances = v34
+        end
+    end
+    v27 = workspace
+    v30 = unpack
+    local v40 = v27:Raycast(v30(v26))
+    if not v40 then
+        v28 = v40.Instance
+        if not v28 then
+            v33 = "Model"
+            local v42 = v28:FindFirstAncestorOfClass(v33)
+        end
+        if not v28 then
+            local v43 = v28.Parent
+            if not v43 then
+                if not v42 then
+                    v43 = v42.Parent
+                    local v44 = v9
+                    if v43 == v44 then
+                        v43 = workspace
+                        v34 = v42.Name
+                        v42 = v43:FindFirstChild(v34)
+                        if not v42 then
+                            local v47 = v42:FindFirstChild(v28.Name)
+                        end
+                        v28 = v47
+                        v47 = v28.Parent
+                        if not v47:IsA("Accessory") then
+                            local v51 = v28:FindFirstChildOfClass("Attachment")
+                            if not v51 then
+                                v44 = v51.Name
+                                if v44 then
+                                    v44 = ""
+                                end
+                                local v52 = true
+                                local v54 = v44:find("Hat")
+                                v52 = true
+                                local v56 = v44:find("Hair")
+                                v52 = true
+                                local v58 = v44:find("Face")
+                                local v60 = v44:find("Neck")
+                                v52 = false
+                                v52 = true
+                                if not v52 then
+                                    v28 = v42.Head
+                                else
+                                    v28 = v42.UpperTorso
+                                end
+                                v51 = v42
+                                v44 = v28
+                                v52 = v40
+                                return v51, v44, v52
+                                return nil, v28, v40
+                                return nil, nil, v40
+                                v28 = nil
+                                v42 = nil
+                                return v28, v42, nil
+                            end
+                        end
+                    end
+                end
+            end
+        end
+    end
+end
+return v1
+
+-- Ok, that was the hitboxhandler script, here is the hitbox module script
+
+local v1 = {}
+v1.__index = v1
+local v2
+v1.initClass = function(p1)
+    v2 = p1
+end
+v1.new = function(p2)
+    local v9 = setmetatable({}, v1)
+    v9.Character = p2
+    v9.Humanoid = p2:WaitForChild("Humanoid")
+    v9.HitboxModel = Instance.new("Model")
+    v9.Active = true
+    v9:Init()
+    return v9
+end
+v1.Init = function(p3)
+    local v19 = p3.Character
+    local v20 = v19.Name
+    p3.HitboxModel.Name = v20
+    local v21, v20, v19 = p3.Character:GetChildren()
+    for v40, v24 in v21, v20, v19 do
+        local v25 = v24:IsA("BasePart")
+        if not v25 then
+            break
+        end
+        v25 = Instance.new
+        local v27 = v25("Part")
+        v27.Anchored = false
+        v27.CanCollide = false
+        v27.Massless = true
+        v27.CastShadow = false
+        v27.Size = v24.Size + Vector3.new(1, 1, 1) * 1.65
+        v27.CFrame = v24.CFrame
+        v27.Color = Color3.fromRGB(255, 0, 0)
+        v27.Transparency = 1
+        v27.Name = v24.Name
+        v27.Parent = p3.HitboxModel
+        local v38 = Instance.new("WeldConstraint")
+        v38.Part0 = v24
+        v38.Part1 = v27
+        v38.Parent = p3.HitboxModel
+    end
+    v21 = p3.HitboxModel
+    v20 = v2
+    v21.Parent = v20
+    v21 = p3.Humanoid.Died
+    v19 = function()
+        p3:Destroy()
+    end
+    v21:Once(v19)
+    p3.Character.AncestryChanged:Connect(function()
+        local v46 = p3.Character.Parent
+        v46 = p3
+        v46:Destroy()
+    end)
+end
+v1.Destroy = function(p4)
+    local v64 = p4.Active
+    if not v64 then
+        v64 = false
+        p4.Active = v64
+        v64 = p4.HitboxModel
+        v64:Destroy()
+    end
+end
+return v1
+
+-- Ok now here is the data for all the guns. First the SSG08
+
+local v1 = {}
+v1.Automatic = false
+v1.ScopeFOV = 55
+v1.ProjectileType = "Bullet"
+v1.Damage = 95
+v1.HeadshotDmg = 220
+v1.EquipTime = 0.05
+v1.FireRate = 1.3
+v1.Range = 1000
+v1.ReloadTime = 3.7
+v1.ClipSize = 10
+v1.WalkSpeed = 4
+v1.RecoilMult = 2
+v1.Spread = 0
+local v18 = {}
+v18.Get = function(p1)
+    return v1
+end
+return v18
+
+-- Now the Kar98k
+
+local v1 = {}
+v1.Automatic = false
+v1.ProjectileType = "Bullet"
+v1.ReloadType = "Single"
+v1.Damage = 260
+v1.HeadshotDmg = 730
+v1.EquipTime = 0.2
+v1.FireRate = 1.25
+v1.Range = 1000
+v1.ReloadTime = 3.3
+v1.ClipSize = 4
+v1.WalkSpeed = 3
+v1.RecoilMult = 6
+v1.Spread = 2
+local v18 = {}
+v18.Get = function(p1)
+    return v1
+end
+return v18
+
+-- Now the R2MI
+
+local v1 = {}
+v1.Automatic = false
+v1.ScopeFOV = 30
+v1.ProjectileType = "Bullet"
+v1.Damage = 120
+v1.HeadshotDmg = 500
+v1.EquipTime = 0.15
+v1.FireRate = 1.5
+v1.Range = 1000
+v1.ReloadTime = 5.3
+v1.ClipSize = 15
+v1.WalkSpeed = 1
+v1.RecoilMult = 8
+v1.Spread = 1
+local v18 = {}
+v18.Get = function(p1)
+    return v1
+end
+return v18
+
+-- Now the AWP.
+
+local v1 = {}
+v1.Automatic = false
+v1.ScopeFOV = 30
+v1.ProjectileType = "Bullet"
+v1.Damage = 120
+v1.HeadshotDmg = 500
+v1.EquipTime = 0.1
+v1.FireRate = 1.5
+v1.Range = 1000
+v1.ReloadTime = 2.8
+v1.ClipSize = 5
+v1.WalkSpeed = 2
+v1.RecoilMult = 6
+v1.Spread = 1
+local v18 = {}
+v18.Get = function(p1)
+    return v1
+end
+return v18
+
+-- Now the G3SG1
+
+local v1 = {}
+v1.Automatic = true
+v1.ScopeFOV = 40
+v1.ProjectileType = "Bullet"
+v1.Damage = 65
+v1.HeadshotDmg = 90
+v1.EquipTime = 0.4
+v1.FireRate = 0.25
+v1.Range = 1000
+v1.ReloadTime = 2.8
+v1.ClipSize = 7
+v1.WalkSpeed = 0
+v1.RecoilMult = 4
+v1.Spread = 6
+local v18 = {}
+v18.Get = function(p1)
+    return v1
+end
+return v18
